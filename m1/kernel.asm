@@ -7,14 +7,10 @@
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
-	push bp
 	mov bp,sp
-	push ds
 	mov ax,[bp+2]
 	mov si,[bp+4]
 	mov cl,[bp+6]
 	mov ds,ax
 	mov [si],cl
-	pop ds
-	pop bp
 	ret
