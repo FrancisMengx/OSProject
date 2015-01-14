@@ -1,3 +1,8 @@
+/*
+	Francis Meng, Noah Miller, Tianu
+	Group 1-H
+*/
+
 int main() {
 
 	putInMemory(0xB000, 0x8140, 'H'); 

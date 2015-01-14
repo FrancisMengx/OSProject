@@ -1,1 +1,12 @@
-Each user story should give a single line description of something that the USER can do with your software.  Be sure to give an estimate of the time you think it will take for you to complete each user story.  Be sure to also give a total time estimation for this milestone.
+Francis Meng, Noah Miller, Tianu
+Group 1-H
+
+Total Estimates time: 2 hrs
+
+The user should be able to view 'Hello World' when running the operating system. 
+Estimated Hours: 1hr
+Actual: 1hr 
+
+All user stories were completed.
+
+
