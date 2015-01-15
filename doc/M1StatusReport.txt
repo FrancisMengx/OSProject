@@ -1,4 +1,36 @@
-Francis Meng, Noah Miller, Tianu
+Francis Meng, Noah Miller, Tianyu Liu
 Group 1-H
 
-Enter your status report for this milestone in this document. You should include the actual time that you spent on EACH user story and the total time spent on this milestone.  Be sure to note what you completed and what you still need to work on.
+User story:
+User is able to build the OS by running "make" and boot the operating system by running
+"bochs -f opsys.bxrc"
+
+Estimate Time:
+1 hour
+
+Actual Time:
+50 min
+
+
+User story:
+User is able to remove executables and output files of build by running "make clean" in the console.
+
+Estimate Time:
+20 min
+
+Actual Time:
+10 min
+
+
+User story:
+User is able to see the words "Hello World" print out when they fire up the operating system
+
+Estimate Time:
+1 hour
+
+Actual Time:
+1.5 hour
+
+
+Current Status:
+All user stories are completed.

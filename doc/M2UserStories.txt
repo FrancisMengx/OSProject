@@ -1,12 +1,5 @@
 Francis Meng, Noah Miller, Tianu
 Group 1-H
 
-Total Estimates time: 2 hrs
-
-The user should be able to view 'Hello World' when running the operating system. 
-Estimated Hours: 1hr
-Actual: 1hr 
-
-All user stories were completed.
 
 
