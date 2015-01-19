@@ -8,21 +8,23 @@ void printString(char *chars);
 void readString(char *chars);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
 void readSector(char *buffer, int sector);
+void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
 
 int main() {
-	char line[80];
-	//int tmp;
-	//char buffer[512];
-	//printString("Enter a line: \0");
-	//readString(line);
-	//printString(line);
-  //readSector(buffer, 30);
-  //printString(buffer);
+	char line[512];
+	int tmp;
+	char buffer[512];
+	printString("Enter a line: \0");
+	readString(line);
+	printString(line);
+  readSector(buffer, 30);
+  printString(buffer);
   makeInterrupt21();
-  interrupt(0x21, 1, line, 0, 0);
+  interrupt(0x21, 2, line, 30, 0);
   interrupt(0x21, 0, line, 0, 0);
+  while(1){}
 }
 
 void readSector(char *buffer, int sector){
@@ -60,6 +62,7 @@ void readString(char *chars)	{
       interrupt(0x10, 0xe*256+'\n', 0, 0, 0);
 			chars[i] = 0xa;
 			chars[i+1] = 0x0;
+      setCursor(i);
 			break;
 		}
     if(tmp == 0x8){
@@ -79,31 +82,44 @@ void readString(char *chars)	{
 	}
 }
 
+void setCursor(int pos){
+  int i;
+  for(i = 0; i < pos; i++){
+        interrupt(0x10, 0xe*256+8, 0, 0, 0);
+  }
+}
+
 void printString(char *chars) {
 	int i;
+  int curPos;
 	char ah;
 	int ax;
 	i = 0;
+  curPos=0;
 	ah = 0xe;
 	while (chars[i] != '\0') {
 		ax = ah * 256 + chars[i];
 		interrupt(0x10, ax, 0, 0, 0);
 		i++;
-	}
-
+    curPos++;
+    if(chars[i] == '\n'){
+      setCursor(curPos);
+      curPos = 0;
+    }
+  }
 }
 
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
 	switch(ax) {
 		case 0: 
-			printString(bx);
+			printString((char *)bx);
 			break;
 		case 1: 
-			readString(bx);
+			readString((char *)bx);
 			break;
 		case 2:
-			readSector(bx, cx);
+			readSector((char *)bx, cx);
 			break;
 		default: 
 			printString("Error ax");
