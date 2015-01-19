@@ -1,2 +1,7 @@
 .svn/
 */bochsout.txt
+*/floppya.img
+*/kernel.o
+*/kernel
+*/kernel_asm.o
+*/bootload
