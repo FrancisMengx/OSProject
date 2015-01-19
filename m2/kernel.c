@@ -6,6 +6,7 @@
 
 void printString(char *chars);
 void readString(char *chars);
+void handleInterrupt21(int AX, int BX, int CX, int DX);
 
 int main() {
 	//interrupt(0x10, 0xe * 256 + 'L', 0, 0, 0);
@@ -47,3 +48,6 @@ void printString(char *chars) {
 
 }
 
+void handleInterrupt21(int AX, int BX, int CX, int DX) {
+	
+}
