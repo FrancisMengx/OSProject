@@ -63,7 +63,6 @@ void readString(char *chars)	{
       interrupt(0x10, 0xe*256+0xd, 0, 0, 0);
 			chars[i] = 0xa;
 			chars[i+1] = 0x0;
-      //setCursor(i);
 			break;
 		}
     if(tmp == 0x8){
@@ -83,41 +82,16 @@ void readString(char *chars)	{
 	}
 }
 
-void setCursor(int pos){
-  /*int i;
-  for(i = 0; i < pos; i++){
-        interrupt(0x10, 0xe*256+8, 0, 0, 0);
-  }*/
-  asm "push ax";
-  asm "push bx";
-  asm "push cx";
-  asm "push dx";
-  asm "mov ah, 0x03";
-  asm "mov bh, 0x00";
-  asm "int 0x10";
-  asm "mov ah, 0x02";
-  asm "mov bh, 0x00";
-  asm "mov dl, 0x00";
-  asm "int 0x10";
-  asm "pop dx";
-  asm "pop cx";
-  asm "pop bx";
-  asm "pop ax";
-}
-
 void printString(char *chars) {
 	int i;
-  //int curPos;
 	char ah;
 	int ax;
 	i = 0;
-  //curPos=0;
 	ah = 0xe;
 	while (chars[i] != '\0') {
 		ax = ah * 256 + chars[i];
 		interrupt(0x10, ax, 0, 0, 0);
 		i++;
-    //curPos++;
     if(chars[i] == '\n'){
       interrupt(0x10, 0xe*256+0xd, 0, 0, 0);
     }
