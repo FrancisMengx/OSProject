@@ -74,7 +74,7 @@ void readString(char *chars)	{
         chars[i-1] = 0x0;
         i--;
         interrupt(0x10, 0xe*256, 0, 0, 0);
-        interrupt(0x10, 0xe*256, 0, 0, 0);
+        interrupt(0x10, 0xe*256+8, 0, 0, 0);
         continue;
       }
       continue;
