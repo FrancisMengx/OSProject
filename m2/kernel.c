@@ -7,12 +7,10 @@
 void printString(char *chars);
 
 int main() {
-
-	printString("test\0");
+		interrupt(0x10, 0xE*256 + 'l', 0, 0, 0);
 }
 
 void printString(char *chars) {
-	
 	int i;
 	char ah;
 	int ax;
