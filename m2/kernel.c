@@ -13,7 +13,7 @@ int div(int a, int b);
 
 int main() {
 	char line[80];
-	int tmp;
+	//int tmp;
 	//char buffer[512];
 	//printString("Enter a line: \0");
 	//readString(line);
@@ -57,27 +57,24 @@ void readString(char *chars)	{
 	while(1) {
 		tmp = interrupt(0x16, 0, 0, 0, 0);
 		if(tmp == 0xd) {
+      interrupt(0x10, 0xe*256+'\n', 0, 0, 0);
 			chars[i] = 0xa;
 			chars[i+1] = 0x0;
 			break;
 		}
     if(tmp == 0x8){
       if(i > 0){
-        tmpArr[0] = 0x8;
-        tmpArr[1] = 0x0;
-        printString(tmpArr);
+        interrupt(0x10, 0xe*256+8, 0, 0, 0);
         chars[i-1] = 0x0;
         i--;
         interrupt(0x10, 0xe*256, 0, 0, 0);
-        printString(tmpArr);
+        interrupt(0x10, 0xe*256, 0, 0, 0);
         continue;
       }
       continue;
     }
 		chars[i] = tmp;
-    		tmpArr[0] = tmp;
-    		tmpArr[1] = 0x0;
-    		printString(tmpArr);
+    interrupt(0x10, 0xe*256+tmp, 0, 0, 0);
 		i++;
 	}
 }
