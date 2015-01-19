@@ -25,5 +25,7 @@ int main() {
     putInMemory(0xB000, 0x8153, 0x7);
     putInMemory(0xB000, 0x8154,'d');
     putInMemory(0xB000, 0x8155, 0x7);
+    while(1){
+    }
 }
 
