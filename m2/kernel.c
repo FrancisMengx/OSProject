@@ -24,7 +24,10 @@ int main() {
   makeInterrupt21();
   interrupt(0x21, 2, line, 30, 0);
   interrupt(0x21, 0, line, 0, 0);
-  while(1){}
+  //while(1){}
+  asm {
+  	"hlt";
+  }
 }
 
 void readSector(char *buffer, int sector){
