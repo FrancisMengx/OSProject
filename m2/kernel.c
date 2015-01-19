@@ -6,19 +6,23 @@
 
 void printString(char *chars);
 void readString(char *chars);
-void handleInterrupt21(int AX, int BX, int CX, int DX);
+void handleInterrupt21(int ax, int bx, int cx, int dx);
 void readSector(char *buffer, int sector);
 int mod(int a, int b);
 int div(int a, int b);
 
 int main() {
 	char line[80];
+	int tmp;
+	//char buffer[512];
 	//printString("Enter a line: \0");
 	//readString(line);
 	//printString(line);
-  char buffer[512];
-  readSector(buffer, 30);
-  printString(buffer);
+  //readSector(buffer, 30);
+  //printString(buffer);
+  makeInterrupt21();
+  interrupt(0x21, 1, line, 0, 0);
+  interrupt(0x21, 0, line, 0, 0);
 }
 
 void readSector(char *buffer, int sector){
@@ -71,9 +75,9 @@ void readString(char *chars)	{
       continue;
     }
 		chars[i] = tmp;
-    tmpArr[0] = tmp;
-    tmpArr[1] = 0x0;
-    printString(tmpArr);
+    		tmpArr[0] = tmp;
+    		tmpArr[1] = 0x0;
+    		printString(tmpArr);
 		i++;
 	}
 }
@@ -93,8 +97,21 @@ void printString(char *chars) {
 }
 
 
-void handleInterrupt21(int AX, int BX, int CX, int DX) {
-
+void handleInterrupt21(int ax, int bx, int cx, int dx) {
+	switch(ax) {
+		case 0: 
+			printString((char*) bx);
+			break;
+		case 1: 
+			readString((char*) bx);
+			break;
+		case 2:
+			readSector((char*) bx, cx);
+			break;
+		default: 
+			printString("Error ax");
+			break;
+	}
 }
 
 int mod(int a, int b){
