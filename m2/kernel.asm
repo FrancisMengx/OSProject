@@ -73,6 +73,6 @@ _interrupt21ServiceRoutine:
 	call _handleInterrupt21
 	pop ax
 	pop bx
-	pop cx;	pop dx
-	
+	pop cx
+	pop dx
 	iret
