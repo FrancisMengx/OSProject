@@ -22,7 +22,7 @@ int main() {
   readSector(buffer, 30);
   printString(buffer);
   makeInterrupt21();
-  interrupt(0x21, 2, line, 30, 0);
+  interrupt(0x21, 1, line, 30, 0);
   interrupt(0x21, 0, line, 0, 0);
   while(1){asm "hlt";}
 }
