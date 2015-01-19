@@ -6,20 +6,49 @@
 
 void printString(char *chars);
 void readString(char *chars);
+void readSector(char *buffer, int sector);
+int mod(int a, int b);
+int div(int a, int b);
+
 
 int main() {
-	//interrupt(0x10, 0xe * 256 + 'L', 0, 0, 0);
-	//interrupt(0x10, 0xe * 256 + 'T', 0, 0, 0);
-	//interrupt(0x10, 0xe * 256 + 'Y', 0, 0, 0);
 	char line[80];
-	printString("Enter a line: \0");
-	readString(line);
-	printString(line);
+	//printString("Enter a line: \0");
+	//readString(line);
+	//printString(line);
+  char buffer[512];
+  readSector(buffer, 30);
+  printString(buffer);
+}
+
+void readSector(char *buffer, int sector){
+  int rs;
+  int head;
+  int track;
+  int ah;
+  int al;
+  int ch;
+  int cl;
+  int dh;
+  int dl;
+
+  rs = mod(sector, 18) + 1;
+  head = mod(div(sector, 18), 2);
+  track = div(sector, 36);
+  ah = 2;
+  al = 1;
+  ch = track;
+  cl = rs;
+  dh = head;
+  dl = 0;
+  interrupt(0x13, ah*256+al, buffer, ch*256+cl, dh*256+dl);
+
 }
 
 void readString(char *chars)	{
 	int i;
 	char tmp;
+  char tmpArr[2];
 	i = 0;
 	while(1) {
 		tmp = interrupt(0x16, 0, 0, 0, 0);
@@ -28,7 +57,23 @@ void readString(char *chars)	{
 			chars[i+1] = 0x0;
 			break;
 		}
+    if(tmp == 0x8){
+      if(i > 0){
+        tmpArr[0] = 0x8;
+        tmpArr[1] = 0x0;
+        printString(tmpArr);
+        chars[i-1] = 0x0;
+        i--;
+        interrupt(0x10, 0xe*256, 0, 0, 0);
+        printString(tmpArr);
+        continue;
+      }
+      continue;
+    }
 		chars[i] = tmp;
+    tmpArr[0] = tmp;
+    tmpArr[1] = 0x0;
+    printString(tmpArr);
 		i++;
 	}
 }
@@ -47,3 +92,16 @@ void printString(char *chars) {
 
 }
 
+int mod(int a, int b){
+  while(a >= b)
+      a = a - b;
+  return a;
+}
+
+int div(int a, int b){
+  int quo = 0;
+  while((quo + 1)*b <=a){
+    quo++;
+  }
+  return quo;
+}
