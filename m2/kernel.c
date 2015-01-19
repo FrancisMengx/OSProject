@@ -97,13 +97,13 @@ void printString(char *chars) {
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
 	switch(ax) {
 		case 0: 
-			printString((char*) bx);
+			printString(bx);
 			break;
 		case 1: 
-			readString((char*) bx);
+			readString(bx);
 			break;
 		case 2:
-			readSector((char*) bx, cx);
+			readSector(bx, cx);
 			break;
 		default: 
 			printString("Error ax");
