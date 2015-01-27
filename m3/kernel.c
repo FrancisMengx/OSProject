@@ -13,36 +13,61 @@ void readString(char *chars);
 void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
+void executeProgram(char* name, int segment);
+char dirSec[512];
+int dirSecEmpty;
 
 int main() {
-	char line[512];
-	int tmp;
-	char buffer[512];
-	printString("Enter a line: \0");
-	readString(line);
-	printString(line);
-  readSector(buffer, 30);
-  printString(buffer);
-  makeInterrupt21();
-  interrupt(0x21, 1, line, 30, 0);
-  interrupt(0x21, 0, line, 0, 0);
-  while(1){asm "hlt";}
+    dirSecEmpty = 0;
+    makeInterrupt21();
+
+    interrupt(0x21, 4, "tstprg\0", 0x2000, 0);
+
+    while(1){asm "hlt";}
+}
+
+void executeProgram(char* name, int segment) {
+    int addr;
+    char buffer[13312];
+    readFile(name, buffer);
+    addr = 0;
+    while(addr<=10000) {
+        putInMemory(segment, addr, buffer+addr);
+        addr++;
+    }
+    launchProgram(segment);
 }
 
 void readFile (char *fileName, char buffer[]){
-
-}
-
-void readFileList (){
-  char sectorBuffer[512];
-  int i;
-  int j;
-  //read director sector
-  char sector[16][2][26];
-  readSector(sectorBuffer, 2);
-  for(i = 0; i < 512; i++){
-    sector[div(i, 32)][0][j] = 
-  }
+    int i;
+    int j;
+    int tmp;
+    int sec;
+    int addr;
+    if(dirSecEmpty==0) {
+        readSector(dirSec, 2);
+        dirSecEmpty = 1;
+    }
+    for(i=0; i<16; i++) {
+        tmp = 0;
+        for(j=0; j<7; j++) {
+            if(j<6) {
+                if(j==0 && dirSec[i*32]==0) break;
+                if(fileName[j]==0 && dirSec[32*i+j]==0) tmp = 1;
+                if(tmp == 0 && fileName[j]!=dirSec[32*i+j]) break;
+            } else {
+                sec = 0;
+                addr = 32*i+j+sec;
+                while(dirSec[addr]!=0) {
+                    readSector(buffer+(sec*512), dirSec[addr]);
+                    sec++;
+                    addr = 32*i+j+sec;
+                }
+                *(buffer+((sec)*512)) = 0x00;
+                return;
+            }
+        }
+    }
 }
 
 void readSector(char *buffer, int sector){
@@ -106,7 +131,7 @@ void printString(char *chars) {
 	int ax;
 	i = 0;
 	ah = 0xe;
-	while (chars[i] != '\0') {
+        while (chars[i] != '\0') {
 		ax = ah * 256 + chars[i];
 		interrupt(0x10, ax, 0, 0, 0);
 		i++;
@@ -128,6 +153,12 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 		case 2:
 			readSector((char *)bx, cx);
 			break;
+                case 3:
+                        readFile((char *)bx, cx);
+                        break;
+                case 4:
+                        executeProgram((char *)bx, cx);
+                        break;
 		default: 
 			printString("Error ax");
 			break;
