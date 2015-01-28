@@ -1,0 +1,21 @@
+Francis Meng, Noah Miller, Tianu
+Group 1-H
+
+1. The user is able to call an interrupt to write a given character array to a given sector.
+   Estimate Time: 30 hour;
+
+2. The user is able to call an interrupt to write a given character array to a new file with a given filename.
+   Estimate Time: 2 hours;
+
+3. A user can execute "delete filename" from the shell to remove the given file.
+   Estimate Time: 1.5 hours;
+
+4. A user can execute "copy filename1 filename2" from the shell to copy the contents of filename1 to filename2.
+   Estimate Time: 2 hours;
+
+5. A user can execute "dir" from the shell to print all files in the current directory onto the shell.
+   Estimate Time: 1 hours;
+
+6. A user can execute "create filename" from the shell to create a file titled "filename"
+   Estimate Time: 1 hours;
+

@@ -23,3 +23,9 @@ Feature Descriptions:
 	Backspace: The user can press the BACKSPACE key to delete characters from an input before pressing 			   ENTER to submit the input.
 
 	Interrupt Handler: The operating system has an interrupt handler that will execute when an interrupt 				   0x21 occurs. 
+
+	Shell: A user is prompted by the shell when running the operating system. After executing a command 		       from the shell, the shell will be reloaded to use again.
+	
+	Execute Command: A user can type "execute program" in the shell and then press "ENTER" to run a program 			 from the shell.
+
+	Type Command: A user can type "type filename" in the shell and then press "ENTER" to print a file from 			      the shell.
