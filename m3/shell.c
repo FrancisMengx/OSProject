@@ -7,6 +7,7 @@ void checkCommand(char *buffer);
 short int compareString(char *s1, char *s2);
 void handleType(char * command, char *args);
 int main(){
+  interrupt(0x21, 100, 123, 0, 0);
   while(1){
     char buffer[512];
     interrupt(0x21, 0, "COOL SHELL>\0", 0, 0);
@@ -29,7 +30,8 @@ void checkCommand(char *buffer){
     }
     break;
   }
-    interrupt(0x21, 0, command, 0, 0);
+
+  interrupt(0x21, 0, command, 0, 0);
   if(compareString(command, "type")){
     handleType(command, buffer+counter);
   }else{

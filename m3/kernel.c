@@ -5,6 +5,7 @@
 
 
 void printString(char *chars);
+void printInt(int n);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
 void readFile (char *fileName, char buffer[]);
 void readSector(char *buffer, int sector);
@@ -166,10 +167,27 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     case 5:
       terminate();
       break;
+    case 100:
+      printInt(bx);
+      break;
 		default:
 			printString("Error ax");
 			break;
 	}
+}
+
+void printInt(int n){
+	char ah;
+  int *list[20];
+  int i;
+  i = 0;
+	int ax;
+	ah = 0xe;
+  while(div(n, 10) >= 1){
+		ax = ah * 256 + 48 + mod(n, 10);
+		interrupt(0x10, ax, 0, 0, 0);
+    n = div(n, 10);
+  }
 }
 
 int mod(int a, int b){
