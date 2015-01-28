@@ -13,3 +13,6 @@ as86 lib.asm -o lib.o
 ld86 -o shell -d shell.o lib.o
 gcc -o loadFile loadFile.c
 ./loadFile shell
+./loadFile message.txt
+./loadFile tstprg
+./loadFile tstpr2
