@@ -17,12 +17,19 @@ int div(int a, int b);
 void executeProgram(char* name, int segment);
 char dirSec[512];
 int dirSecEmpty;
+char shell[6];
 
 int main() {
     char buffer[13312];
     dirSecEmpty = 0;
     makeInterrupt21();
-    interrupt(0x21, 4, "shell\0", 0x2000, 0);
+    shell[0] = 's';
+    shell[1] = 'h';
+    shell[2] = 'e';
+    shell[3] = 'l';
+    shell[4] = 'l';
+    shell[5] = '\0';
+    interrupt(0x21, 4, shell, 0x2000, 0);
 
     while(1){asm "hlt";}
 }
@@ -41,8 +48,13 @@ void executeProgram(char* name, int segment) {
 }
 
 void terminate(){
-    //interrupt(0x21, 0, "Hello World\0", 0, 0);
-    interrupt(0x21, 4, "shell\0", 0x2000, 0);
+    shell[0] = 's';
+    shell[1] = 'h';
+    shell[2] = 'e';
+    shell[3] = 'l';
+    shell[4] = 'l';
+    shell[5] = '\0';
+    interrupt(0x21, 4, shell, 0x2000, 0);
 }
 
 void readFile (char *fileName, char buffer[]){
