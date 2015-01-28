@@ -2,4 +2,4 @@ compile:
 	bash compileOS.sh
 
 clean:
-	rm *.o kernel bootload bochsout.txt ./loadFile *~
+	rm *.o kernel bootload bochsout.txt loadFile *~

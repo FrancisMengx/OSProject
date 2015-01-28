@@ -7,9 +7,9 @@
 void printString(char *chars);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
 void readFile (char *fileName, char buffer[]);
-void readFileList();
 void readSector(char *buffer, int sector);
 void readString(char *chars);
+void terminate();
 void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
@@ -18,10 +18,10 @@ char dirSec[512];
 int dirSecEmpty;
 
 int main() {
+    char buffer[13312];
     dirSecEmpty = 0;
     makeInterrupt21();
-
-    interrupt(0x21, 4, "tstprg\0", 0x2000, 0);
+    interrupt(0x21, 4, "shell\0", 0x2000, 0);
 
     while(1){asm "hlt";}
 }
@@ -32,10 +32,14 @@ void executeProgram(char* name, int segment) {
     readFile(name, buffer);
     addr = 0;
     while(addr<=10000) {
-        putInMemory(segment, addr, buffer+addr);
+        putInMemory(segment, addr, *(buffer+addr));
         addr++;
     }
     launchProgram(segment);
+}
+
+void terminate(){
+    interrupt(0x21, 4, "shell\0", 0x2000, 0);
 }
 
 void readFile (char *fileName, char buffer[]){
@@ -153,13 +157,16 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 		case 2:
 			readSector((char *)bx, cx);
 			break;
-                case 3:
-                        readFile((char *)bx, cx);
-                        break;
-                case 4:
-                        executeProgram((char *)bx, cx);
-                        break;
-		default: 
+    case 3:
+      readFile((char *)bx, (char *)cx);
+      break;
+    case 4:
+      executeProgram((char *)bx, cx);
+      break;
+    case 5:
+      terminate();
+      break;
+		default:
 			printString("Error ax");
 			break;
 	}
