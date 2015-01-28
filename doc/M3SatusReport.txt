@@ -1,0 +1,49 @@
+Francis Meng, Noah Miller, Tianu
+Group 1-H
+
+User Story:
+The user is able to run the shell.
+
+Estimated Time: 1 hour
+
+Actual Time: 30 min
+
+User Story:
+When running the shell, the user can enter "type filename" to run the type command.
+
+Estimated Time: 30 min
+
+Actual Time: 45 min
+
+User Story:
+After entering the type command, the user can read the contents of the given file. 
+
+Estimated Time: 1 hour
+
+Actual Time: 1 hour
+
+User Story:
+As a user, entering a non-existing command into the shell will give an appropriate error message.
+
+Estimated Time: 1 hour
+
+Actual Time: 10 min
+
+User Story:
+When running the shell, the user can enter "execute filename" to run the execute command.
+
+Estimated Time: 30 min;
+
+Actual Time: 1 hour;
+
+User Story:
+After entering the execute command, the user is able to use the executing program.
+
+Estimated Time: 2 hour
+
+Actual Time: 3.5 hour
+
+
+Current Status:
+All user stories are completed.
+
