@@ -5,26 +5,88 @@
 
 
 void printString(char *chars);
-void readString(char *chars);
+void printInt(int n);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
+void readFile (char *fileName, char buffer[]);
 void readSector(char *buffer, int sector);
+void readString(char *chars);
+void terminate();
 void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
+void executeProgram(char* name, int segment);
+char dirSec[512];
+int dirSecEmpty;
+char shell[6];
 
 int main() {
-	char line[512];
-	int tmp;
-	char buffer[512];
-	printString("Enter a line: \0");
-	readString(line);
-	printString(line);
-  readSector(buffer, 30);
-  printString(buffer);
-  makeInterrupt21();
-  interrupt(0x21, 1, line, 30, 0);
-  interrupt(0x21, 0, line, 0, 0);
-  while(1){asm "hlt";}
+    char buffer[13312];
+    dirSecEmpty = 0;
+    makeInterrupt21();
+    shell[0] = 's';
+    shell[1] = 'h';
+    shell[2] = 'e';
+    shell[3] = 'l';
+    shell[4] = 'l';
+    shell[5] = '\0';
+    interrupt(0x21, 4, shell, 0x2000, 0);
+
+    while(1){asm "hlt";}
+}
+
+void executeProgram(char* name, int segment) {
+    int addr;
+    char buffer[13312];
+    readFile(name, buffer);
+    addr = 0;
+    while(addr<=10000) {
+        putInMemory(segment, addr, *(buffer+addr));
+        addr++;
+    }
+    launchProgram(segment);
+    interrupt(0x21, 5, 0, 0, 0);
+}
+
+void terminate(){
+    shell[0] = 's';
+    shell[1] = 'h';
+    shell[2] = 'e';
+    shell[3] = 'l';
+    shell[4] = 'l';
+    shell[5] = '\0';
+    interrupt(0x21, 4, shell, 0x2000, 0);
+}
+
+void readFile (char *fileName, char buffer[]){
+    int i;
+    int j;
+    int tmp;
+    int sec;
+    int addr;
+    if(dirSecEmpty==0) {
+        readSector(dirSec, 2);
+        dirSecEmpty = 1;
+    }
+    for(i=0; i<16; i++) {
+        tmp = 0;
+        for(j=0; j<7; j++) {
+            if(j<6) {
+                if(j==0 && dirSec[i*32]==0) break;
+                if(fileName[j]==0 && dirSec[32*i+j]==0) tmp = 1;
+                if(tmp == 0 && fileName[j]!=dirSec[32*i+j]) break;
+            } else {
+                sec = 0;
+                addr = 32*i+j+sec;
+                while(dirSec[addr]!=0) {
+                    readSector(buffer+(sec*512), dirSec[addr]);
+                    sec++;
+                    addr = 32*i+j+sec;
+                }
+                *(buffer+((sec)*512)) = 0x00;
+                return;
+            }
+        }
+    }
 }
 
 void readSector(char *buffer, int sector){
@@ -88,7 +150,7 @@ void printString(char *chars) {
 	int ax;
 	i = 0;
 	ah = 0xe;
-	while (chars[i] != '\0') {
+        while (chars[i] != '\0') {
 		ax = ah * 256 + chars[i];
 		interrupt(0x10, ax, 0, 0, 0);
 		i++;
@@ -110,10 +172,37 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 		case 2:
 			readSector((char *)bx, cx);
 			break;
-		default: 
+    case 3:
+      readFile((char *)bx, (char *)cx);
+      break;
+    case 4:
+      executeProgram((char *)bx, cx);
+      break;
+    case 5:
+      terminate();
+      break;
+    case 100:
+      printInt(bx);
+      break;
+		default:
 			printString("Error ax");
 			break;
 	}
+}
+
+void printInt(int n){
+	char ah;
+  int *list[20];
+	int ax;
+	ah = 0xe;
+  while(div(n, 10) >= 1){
+		ax = ah * 256 + 48 + mod(n, 10);
+		interrupt(0x10, ax, 0, 0, 0);
+    n = div(n, 10);
+  }
+  ax = ah * 256 + 48 + mod(n, 10);
+	interrupt(0x10, ax, 0, 0, 0);
+	interrupt(0x10, ah*256 + 48 + '\n', 0, 0, 0);
 }
 
 int mod(int a, int b){
