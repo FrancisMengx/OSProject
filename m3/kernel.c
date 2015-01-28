@@ -39,6 +39,7 @@ void executeProgram(char* name, int segment) {
 }
 
 void terminate(){
+    //interrupt(0x21, 0, "Hello World\0", 0, 0);
     interrupt(0x21, 4, "shell\0", 0x2000, 0);
 }
 
