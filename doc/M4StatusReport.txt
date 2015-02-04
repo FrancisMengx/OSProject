@@ -30,15 +30,15 @@ A user can execute "copy filename1 filename2" from the shell to copy the content
    
 Estimate Time: 2 hours
 
-Actual Time: 1.5 hours
+Actual Time: 2.5 hours
 
 
 User Story:
 A user can execute "dir" from the shell to print all files in the current directory onto the shell.
    
-Estimate Time: 1 hours
+Estimate Time: 1 hour
 
-Actual Time: 45 min
+Actual Time: 1 hour
 
 
 User Story:
