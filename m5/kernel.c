@@ -7,6 +7,7 @@
 void printString(char *chars);
 void printInt(int n);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
+void handleTimerInterrupt(int seg, int sp);
 int readFile (char *fileName, char buffer[]);
 void writeFile (char* fileName, char* buffer, int secNum);
 void deleteFile (char *filename);
@@ -19,47 +20,83 @@ void terminate();
 void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
-void executeProgram(char* name, int segment);
+void executeProgram(char* name);
 char dirSec[512];
 char shell[6];
 char num[10];
+struct entry{
+  short int isActive;
+  int sp;
+  char *name;
+};
+short int currentProcess;
+
+struct entry pTable[8];
 
 int main() {
+    int i;
     char buffer[13312];
     makeInterrupt21();
+    for(i = 0; i < 8; i++){
+      pTable[i].isActive = 0;
+      pTable[i].sp = 0xff00;
+    }
+    currentProcess = 0;
+    makeTimerInterrupt();
     shell[0] = 's';
     shell[1] = 'h';
     shell[2] = 'e';
     shell[3] = 'l';
     shell[4] = 'l';
     shell[5] = '\0';
-    interrupt(0x21, 4, shell, 0x2000, 0);
+    interrupt(0x21, 4, shell, 0, 0);
 
     while(1){asm "hlt";}
 }
 
-void executeProgram(char* name, int segment) {
+void handleTimerInterrupt(int seg, int sp){
+  int i;
+  pTable[currentProcess].sp = sp;
+  for(i = 1; i <= 8; i++){
+    if(pTable[mod(i+currentProcess, 8)].isActive){
+      currentProcess = mod(i+currentProcess, 8);
+      break;
+    }
+  }
+    printString(pTable[currentProcess].name);
+  returnFromTimer((currentProcess+2)*0x1000, pTable[currentProcess].sp);
+}
+
+void executeProgram(char* name) {
     int addr;
     int i;
     char buffer[13312];
+    for(i = 0; i < 8; i++){
+      if(!pTable[i].isActive){
+        setKernelDataSegment();
+        pTable[i].isActive = 1;
+        pTable[i].name = name;
+        restoreDataSegment();
+        break;
+      }
+    }
     readFile(name, buffer);
     addr = 0;
     while(addr<=10000) {
-        putInMemory(segment, addr, *(buffer+addr));
+        putInMemory(pTable[i].sp, addr, *(buffer+addr));
         addr++;
     }
-    launchProgram(segment);
+    /*don't know if this will work, but it seems like this is how we do it.
+    might need to be changed later;*/
+
+    initializeProgram((i+2) * 0x1000);
     interrupt(0x21, 5, 0, 0, 0);
 }
 
 void terminate(){
-    shell[0] = 's';
-    shell[1] = 'h';
-    shell[2] = 'e';
-    shell[3] = 'l';
-    shell[4] = 'l';
-    shell[5] = '\0';
-    interrupt(0x21, 4, shell, 0x2000, 0);
+    setKernelDataSegment();
+    pTable[currentProcess].isActive = 0;
+    while(1){}
 }
 
 int readFile (char *fileName, char *buffer){
@@ -358,7 +395,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       readFile((char *)bx, (char *)cx);
       break;
     case 4:
-      executeProgram((char *)bx, cx);
+      executeProgram((char *)bx);
       break;
     case 5:
       terminate();
@@ -378,7 +415,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     case 30:
       listFiles();
       break;
-
     case 100:
       printInt(bx);
       break;
