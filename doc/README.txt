@@ -16,16 +16,30 @@ Instructions:
 
 Feature Descriptions:
 
-	Print to Console: A user is prompted to enter a message in the console. After pressing ENTER, The 				  message will be displayed on the next line.
+	Print to Console: A user is prompted to enter a message in the console. After pressing ENTER, The message will be displayed on the next line.
 
-	Reading Sectors: The contents can read from a given sector on the floppy disk and print the 				 results on the screen.
+	Reading Sectors: The given contents can read from a given sector on the floppy disk and print the results on the screen.
 
-	Backspace: The user can press the BACKSPACE key to delete characters from an input before pressing 			   ENTER to submit the input.
+	Backspace: The user can press the BACKSPACE key to delete characters from an input before pressing ENTER to submit the input.
 
-	Interrupt Handler: The operating system has an interrupt handler that will execute when an interrupt 				   0x21 occurs. 
+	Interrupt Handler: The operating system has an interrupt handler that will execute when an interrupt 0x21 occurs. 
 
-	Shell: A user is prompted by the shell when running the operating system. After executing a command 		       from the shell, the shell will be reloaded to use again.
+	Shell: A user is prompted by the shell when running the operating system. After executing a command from the shell, the shell will be reloaded to use again.
 	
-	Execute Command: A user can type "execute program" in the shell and then press "ENTER" to run a program 			 from the shell.
+	Execute Command: A user can type "execute program" in the shell and then press "ENTER" to run a program from the shell.
 
-	Type Command: A user can type "type filename" in the shell and then press "ENTER" to print a file from 			      the shell.
+	Type Command: A user can type "type filename" in the shell and then press "ENTER" to print a file from the shell.
+
+	Delete Command: A user can type "delete filename" in the shell and press "ENTER" to remove the file from the floppy. 
+
+	Create Command: A user can type "create filename" in the shell and press "ENTER" to create a new file. Then the user will be prompted to enter multiple lines for the file until the user enters an empyty line.
+
+	Write Sector: The given contents can be written to the given sector number. 
+
+	Write File: The given contents can be stored in a sector and mapped to the given filename. The user must provide the number of sectors the contents will occupy. 
+	
+	Copy Command: A user can type "copy file1 file 2" in the shell and press "ENTER" to copy the contents of file1 to a new file, file2. 
+
+	Dir Command: A user can type "dir" in the shell and press "ENTER" to print all files in the directory. This command also prints the number of sectors that each file occupies.
+
+	
