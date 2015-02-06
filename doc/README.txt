@@ -60,6 +60,8 @@ Addional Features:
 
 	Rename Command: Renames the given file to a specified name. Type 'rename filename name' and press "ENTER".
 
+  Quit Command: Quit the entire operating system. Type 'Quit' and press 'ENTER'.
+
 	
 
 	

@@ -10,7 +10,14 @@ void handleExecute(char *args);
 void handleDeleteFile(char *args);
 void handleCopyFile(char *args);
 void handleDir();
+void handleKillProcess(char p);
 void handleCreateFile(char *fileName);
+void handleExecForeGound(char * name);
+void handleClear();
+void handleHelp();
+void handleRename();
+void handlePs();
+void handleBgColor(char * color);
 int div(int a, int b);
 int main(){
   enableInterrupts();
@@ -49,9 +56,83 @@ void checkCommand(char *buffer){
     handleDir();
   }else if(compareString(command, "create")){
     handleCreateFile(buffer+counter+1);
+  }else if(compareString(command, "kill")){
+    handleKillProcess(*(buffer+counter+1));
+  }else if(compareString(command, "execforeground")){
+    handleExecForeGound(buffer+counter+1);
+  }else if(compareString(command, "clear")){
+    handleClear();
+  }else if(compareString(command, "changeBgColor")){
+    handleBgColor(buffer+counter+1);
+  }else if(compareString(command, "help")){
+    handleHelp();
+  }else if(compareString(command, "rename")){
+    handleRename(buffer+counter+1);
+  }else if(compareString(command, "quit")){
+    interrupt(0x15, 0x5307, 0x0001, 0x0003);
   }else{
     interrupt(0x21, 0, "Command Not Found\n\0", 0, 0);
   }
+}
+
+void handleRename(char *args){
+  char buffer[13312];
+  char argOne[20];
+  int counter;
+  char secNum[1];
+  int i;
+  int j;
+  counter = 0;
+  while(1){
+    if(args[counter] != ' ' && counter < 20){
+      argOne[counter] = args[counter];
+      counter++;
+      continue;
+    }
+    argOne[counter] = '\0';
+    break;
+  }
+  i = 0;
+  interrupt(0x21, 20, argOne, "tmp\0", 0);
+  interrupt(0x21, 7, argOne, 0, 0);
+  interrupt(0x21, 20, "tmp\0",args+counter+1, 0);
+  interrupt(0x21, 7, "tmp\0", 0, 0);
+
+}
+
+void handleHelp(){
+  char buffer[13312];
+  interrupt(0x21, 3, "help.t", buffer, 0);
+  interrupt(0x21, 0, buffer, 0, 0);
+}
+
+void handleBgColor(char * color){
+  int colorNum;
+  colorNum = 0;
+  if(compareString(color, "black\n")){
+    colorNum = 0;
+  }else if(compareString(color,"blue\n")){
+    colorNum = 1;
+  }else if(compareString(color, "green\n")){
+    colorNum = 2;
+  }else if(compareString(color, "red\n")){
+    colorNum = 4;
+  }else if(compareString(color, "brown\n")){
+    colorNum = 6;
+  }
+   interrupt(0x10,0x0B00,colorNum,0,0);
+}
+
+void handleClear(){
+  interrupt(0x21, 11, 0, 0, 0);
+}
+
+void handleExecForeGound(char * name){
+  interrupt(0x21, 10, name, 0, 0);
+}
+
+void handleKillProcess(char p){
+  interrupt(0x21, 9, p-'0', 0, 0);
 }
 
 void handleCreateFile(char *fileName){

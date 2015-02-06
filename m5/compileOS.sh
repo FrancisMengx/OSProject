@@ -14,5 +14,7 @@ ld86 -o shell -d shell.o lib.o
 gcc -o loadFile loadFile.c
 ./loadFile shell
 ./loadFile message.txt
+./loadFile help.txt
+./loadFile phello
 ./loadFile tstprg
 ./loadFile tstpr2

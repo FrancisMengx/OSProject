@@ -7,7 +7,6 @@
 void printString(char *chars);
 void printInt(int n);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
-void handleTimerInterrupt(int seg, int sp);
 int readFile (char *fileName, char buffer[]);
 void writeFile (char* fileName, char* buffer, int secNum);
 void deleteFile (char *filename);
@@ -16,32 +15,36 @@ void listFiles();
 void readSector(char *buffer, int sector);
 void writeSector(char *buffer, int sector);
 void readString(char *chars);
+void killProcess(int pid);
 void terminate();
+void clear();
 void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
 void executeProgram(char* name);
-char dirSec[512];
+void execforeground(char* name, int pid);
 char shell[6];
 char num[10];
 struct entry{
-  short int isActive;
+  int active;
   int sp;
   char *name;
+  int waiting;
 };
-short int currentProcess;
 
-struct entry pTable[8];
+struct entry processTable[8];
+int currentProcess;
 
 int main() {
-    int i;
     char buffer[13312];
-    makeInterrupt21();
-    for(i = 0; i < 8; i++){
-      pTable[i].isActive = 0;
-      pTable[i].sp = 0xff00;
+    int i;
+    for(i = 0; i < 8; i ++){
+      processTable[i].active = 0;
+      processTable[i].sp = 0xff00;
+      processTable[i].waiting = -1;
     }
     currentProcess = 0;
+    makeInterrupt21();
     makeTimerInterrupt();
     shell[0] = 's';
     shell[1] = 'h';
@@ -49,54 +52,128 @@ int main() {
     shell[3] = 'l';
     shell[4] = 'l';
     shell[5] = '\0';
-    interrupt(0x21, 4, shell, 0, 0);
+    interrupt(0x21, 4, shell, 0x2000, 0);
 
     while(1){asm "hlt";}
 }
 
-void handleTimerInterrupt(int seg, int sp){
+
+void clear(){
+    interrupt(0x10, 3,0,0,0);
+}
+
+void execforeground(char* name, int pid){
+   int addr;
+    int i;
+    char buffer[13312];
+    int segment;
+    for(i = 0 ; i < 8; i++){
+      setKernelDataSegment();
+      if(processTable[i].active == 0){
+        currentProcess = i;
+        segment = (i+2)*0x1000;
+        restoreDataSegment();
+        break;
+      }
+      restoreDataSegment();
+    }
+    
+    readFile(name, buffer);
+    addr = 0;
+    while(addr<=13312) {
+        putInMemory(segment, addr, *(buffer+addr));
+        addr++;
+    }
+    initializeProgram(segment);
+    setKernelDataSegment();
+    processTable[i].active = 1;
+    processTable[pid].waiting = i;
+    processTable[i].name = name;
+    restoreDataSegment();
+
+}
+
+void killProcess(int pid){
   int i;
-  pTable[currentProcess].sp = sp;
-  for(i = 1; i <= 8; i++){
-    if(pTable[mod(i+currentProcess, 8)].isActive){
-      currentProcess = mod(i+currentProcess, 8);
-      break;
+  setKernelDataSegment();
+  processTable[pid].active = 0;
+  processTable[pid].sp = 0xff00;
+  for(i = 0; i < 8; i++){
+    if(processTable[i].waiting == pid){
+      processTable[i].waiting = -1;
     }
   }
-    printString(pTable[currentProcess].name);
-  returnFromTimer((currentProcess+2)*0x1000, pTable[currentProcess].sp);
+  restoreDataSegment();
+}
+
+void handleTimerInterrupt(int segment, int sp){
+  int i, tmp;
+  setKernelDataSegment();
+  tmp = 0;
+  currentProcess = div(segment, 0x1000) - 2;
+  processTable[currentProcess].sp = sp;
+  i = mod(currentProcess+1, 8);
+  while(1){
+    if(i >= 8){
+      i = 0;
+    }
+    if(processTable[i].active == 1 && processTable[i].waiting == -1){
+      break;
+    }
+    if(tmp == 2){
+        returnFromTimer(segment, sp);
+        break;
+    }
+    if(i == mod(currentProcess+1, 8)){
+        tmp++;
+    }
+    i++;
+  }
+  currentProcess = i;
+  restoreDataSegment();
+  returnFromTimer((i+2)*0x1000, processTable[i].sp);
 }
 
 void executeProgram(char* name) {
     int addr;
     int i;
     char buffer[13312];
-    for(i = 0; i < 8; i++){
-      if(!pTable[i].isActive){
-        setKernelDataSegment();
-        pTable[i].isActive = 1;
-        pTable[i].name = name;
+    int segment;
+    for(i = 0 ; i < 8; i++){
+      setKernelDataSegment();
+      if(processTable[i].active == 0){
+        currentProcess = i;
+        segment = (i+2)*0x1000;
         restoreDataSegment();
         break;
       }
+      restoreDataSegment();
     }
+    
     readFile(name, buffer);
     addr = 0;
-    while(addr<=10000) {
-        putInMemory(pTable[i].sp, addr, *(buffer+addr));
+    while(addr<=13312) {
+        putInMemory(segment, addr, *(buffer+addr));
         addr++;
     }
-    /*don't know if this will work, but it seems like this is how we do it.
-    might need to be changed later;*/
-
-    initializeProgram((i+2) * 0x1000);
-    interrupt(0x21, 5, 0, 0, 0);
+    initializeProgram(segment);
+    setKernelDataSegment();
+    processTable[i].active = 1;
+    processTable[i].name = name;
+    restoreDataSegment();
 }
 
 void terminate(){
+    int i;
     setKernelDataSegment();
-    pTable[currentProcess].isActive = 0;
-    while(1){}
+    processTable[currentProcess].active = 0;
+    for(i = 0; i < 8; i++){
+      if(processTable[i].waiting == currentProcess){
+        processTable[i].waiting = -1;
+      }
+    }
+    restoreDataSegment();
+    while(1);
 }
 
 int readFile (char *fileName, char *buffer){
@@ -105,6 +182,7 @@ int readFile (char *fileName, char *buffer){
     int tmp;
     int sec;
     int addr;
+    char dirSec[512];
     readSector(dirSec, 2);
     for(i=0; i<16; i++) {
         tmp = 0;
@@ -137,6 +215,7 @@ void deleteFile (char *fileName){
     int sec;
     int addr;
     char mapSec[512];
+    char dirSec[512];
     readSector(dirSec, 2);
     readSector(mapSec, 1);
     for(i=0; i<16; i++) {
@@ -179,6 +258,7 @@ void listFiles(){
   char buffer[13312];
   char name[6];
   char digit[1];
+  char dirSec[512];
   num[0] = '0';
   num[1] = '1';
   num[2] = '2';
@@ -239,6 +319,7 @@ void writeFile (char* fileName, char* buffer, int secNum){
   char mapSec[512];
   char oneSec[512];
   char sectors[512];
+  char dirSec[512];
   readSector(dirSec, 2);
   readSector(mapSec, 1);
   i = 0;
@@ -408,6 +489,15 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       break;
     case 8:
       writeFile((char *)bx, (char*)cx, dx);
+      break;
+    case 9:
+      killProcess(bx);
+      break;
+    case 10:
+      execforeground((char *)bx, cx);
+      break;
+    case 11:
+      clear();
       break;
     case 20:
       copyFile((char *)bx, (char*) cx);

@@ -20,7 +20,6 @@ void setCursor(int pos);
 int mod(int a, int b);
 int div(int a, int b);
 void executeProgram(char* name, int segment);
-char dirSec[512];
 char shell[6];
 char num[10];
 
@@ -68,6 +67,7 @@ int readFile (char *fileName, char *buffer){
     int tmp;
     int sec;
     int addr;
+    char dirSec[512];
     readSector(dirSec, 2);
     for(i=0; i<16; i++) {
         tmp = 0;
@@ -100,6 +100,7 @@ void deleteFile (char *fileName){
     int sec;
     int addr;
     char mapSec[512];
+    char dirSec[512];
     readSector(dirSec, 2);
     readSector(mapSec, 1);
     for(i=0; i<16; i++) {
@@ -142,6 +143,7 @@ void listFiles(){
   char buffer[13312];
   char name[6];
   char digit[1];
+  char dirSec[512];
   num[0] = '0';
   num[1] = '1';
   num[2] = '2';
@@ -202,6 +204,7 @@ void writeFile (char* fileName, char* buffer, int secNum){
   char mapSec[512];
   char oneSec[512];
   char sectors[512];
+  char dirSec[512];
   readSector(dirSec, 2);
   readSector(mapSec, 1);
   i = 0;
