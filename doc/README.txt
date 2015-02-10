@@ -1,10 +1,10 @@
 Francis Meng, Noah Miller, Tianyu Liu
 Group 1-H
 
-Current Iteration: Milestone 2;
+Current Iteration: Milestone 5;
 
 Instructions:
-  Build:     there is a Makefile in the milestone repository. Type in command make will compile the project
+  Build:     There is a Makefile in the milestone repository. Type in command make will compile the project
              the compilation is controled by the shell script: compileOS.sh. So in the future if we want to
              change the way we are compiling our program, we can change the compile.sh file;
 
@@ -40,6 +40,24 @@ Feature Descriptions:
 	
 	Copy Command: A user can type "copy file1 file 2" in the shell and press "ENTER" to copy the contents of file1 to a new file, file2. 
 
-	Dir Command: A user can type "dir" in the shell and press "ENTER" to print all files in the directory. This command also prints the number of sectors that each file occupies.
+	Dir Command: A user can type "dir" in the shell and press "ENTER" to print all files in the directory.
+
+	Kill Command: A user can kill the given process. Type 'kill processNumber' and press "ENTER". processNumber is an integer from 0 to 7 which is assigned to the process when scheduled.  
+
+	Wait Command: A user can force the shell to wait on the given process to finish executing. Type 'wait processNumber' and press "ENTER". processNumber is an integer from 0 to 7 which is assigned to the process when scheduled.  
+
+	MultiProcessing: The operating system supports multiprocessing. The user can execute a process in the shell and then continue to use the shell while the process is running. 
+
+Addional Features:
+
+	Dir Command: In addition to its standard feature, this command prints the number of sectors that each file occupies.
+
+	Clear Command: A user can clear the terminal from previous commands. Type 'clear' and press "ENTER". 
+
+	changeBgColor Command: A user can change background color. Type 'changeBgColor fg bg' and press "ENTER".
+
+	ps Command: Displays all processes that are currently scheduled to run. Type 'ps' and press "ENTER".
+
+	
 
 	
