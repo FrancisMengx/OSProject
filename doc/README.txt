@@ -44,7 +44,7 @@ Feature Descriptions:
 
 	Kill Command: A user can kill the given process. Type 'kill processNumber' and press "ENTER". processNumber is an integer from 0 to 7 which is assigned to the process when scheduled.  
 
-	Wait Command: A user can force the shell to wait on the given process to finish executing. Type 'wait processNumber' and press "ENTER". processNumber is an integer from 0 to 7 which is assigned to the process when scheduled.  
+	execforeground Command: A user can force the shell to wait on the given process to finish executing. Type 'wait processNumber' and press "ENTER". processNumber is an integer from 0 to 7 which is assigned to the process when scheduled.  
 
 	MultiProcessing: The operating system supports multiprocessing. The user can execute a process in the shell and then continue to use the shell while the process is running. 
 
