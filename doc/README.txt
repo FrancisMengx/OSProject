@@ -58,6 +58,8 @@ Addional Features:
 
 	Help Command: Displays a help menu with a list of commands. Type 'help' and press "ENTER".
 
+	Rename Command: Renames the given file to a specified name. Type 'rename filename name' and press "ENTER".
+
 	
 
 	
