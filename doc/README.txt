@@ -56,8 +56,6 @@ Addional Features:
 
 	changeBgColor Command: A user can change background color. Type 'changeBgColor bg' and press "ENTER".
 
-	ps Command: Displays all processes that are currently scheduled to run. Type 'ps' and press "ENTER".
-
 	Help Command: Displays a help menu with a list of commands. Type 'help' and press "ENTER".
 
 	
