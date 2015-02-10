@@ -54,7 +54,7 @@ Addional Features:
 
 	Clear Command: A user can clear the terminal from previous commands. Type 'clear' and press "ENTER". 
 
-	changeBgColor Command: A user can change background color. Type 'changeBgColor fg bg' and press "ENTER".
+	changeBgColor Command: A user can change background color. Type 'changeBgColor bg' and press "ENTER".
 
 	ps Command: Displays all processes that are currently scheduled to run. Type 'ps' and press "ENTER".
 
